@@ -57,8 +57,6 @@ bcycle_new['Checkout hour'] = bcycle_new['Checkout dt'].dt.hour.astype(int)
 bcycle_new.head()
 bcycle_new.to_csv('/Users/marthamorrissey/Desktop/bcycle_modified.csv')
 
-bcycle_new = pd.read_csv('/Users/marthamorrissey/Desktop/bcycle_modified.csv')
-
 bcycle_new['Checkout hour']
 
 
@@ -69,8 +67,6 @@ bcycle_new['pm_commute_hrs'] = np.where((bcycle_new['Checkout hour'] >= 17 ) & (
 
 bcycle_new['encoded_cstation'] = label_encoder.fit_transform(bcycle_new["Checkout Station (Station Information)"])
 bcycle_new['encoded_rstation'] = label_encoder.fit_transform(bcycle_new["Return Station (Station Information)"])
-
-bcycle_new.to_csv('/Users/marthamorrissey/Desktop/bcycle_modified_full.csv')
 
 
 bcycle_model = bcycle_new[['encoded_cstation', 'encoded_rstation', 'am_commute_hrs', 'pm_commute_hrs', 'weekend']]
@@ -144,16 +140,3 @@ preds = log_model2.predict(X= X_test)
 # Generate table of predictions vs actual
 pd.crosstab(preds,y_test)
 log_model2.score(X = X_test,y = y_test)
-
-
-
-
-
-######### Chicago data
-chi_q1 = pd.read_csv('/Users/marthamorrissey/Downloads/Divvy_Trips_2017_Q1Q2/Divvy_Trips_2017_Q1.csv')
-chi_q1.head()
-chi_q2 = pd.read_csv('/Users/marthamorrissey/Downloads/Divvy_Trips_2017_Q1Q2/Divvy_Trips_2017_Q2.csv')
-chi = chi_q1.append(chi_q2)
-chi.shape
-chi_q1.shape
-chi_q2.shape
