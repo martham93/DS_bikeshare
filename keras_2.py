@@ -37,6 +37,10 @@ df['Overcharge'] = df2
 df['Overcharge'].head(5)
 df.columns
 
+
+
+
+
 df_majority = df[df.Overcharge==0]
 df_minority = df[df.Overcharge==1]
 len(df_majority)
@@ -101,10 +105,10 @@ y_train2.shape
 scores = model.evaluate(np.array(X_train2), np.array(y_train2))
 
 
-print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100)) #86.16%
 
 scores_test = model.evaluate(np.array(X_test2), np.array(y_test2))
-print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100))
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #86.15%
 
 import pydot_ng as pydot
 import graphviz
@@ -119,4 +123,13 @@ from sklearn.metrics import roc_auc_score
 
 y_pred = model.predict_proba(np.array(X_test2))
 roc_auc_score(np.array(y_test2), y_pred)
-s
+#.67 RUC score
+
+model = Sequential()
+model.add(Dense(16, input_dim=7, activation='relu')) #input dim X_trai shape[1]
+model.add(Dense(8, activation='relu'))
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[''])
+
+model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=100)

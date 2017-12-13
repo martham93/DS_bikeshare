@@ -130,6 +130,10 @@ model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 model.fit(np.array(X_train), np.array(y_train), epochs=10, batch_size=100)
+
+np.array(X_train).shape
+np.array(y_train).shape
+
 scores = model.evaluate(np.array(X_train), np.array(y_train))
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
 
