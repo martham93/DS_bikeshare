@@ -98,8 +98,10 @@ X_train2, X_test2, y_train2, y_test2 = train_test_split(bcycle_model2, df['ot'],
 model = Sequential()
 model.add(Dense(16, input_dim=7, activation='relu')) #input dim X_trai shape[1]
 model.add(BatchNormalization())
+model.add(Dropout(0.3))
 model.add(Dense(8, activation='relu'))
 model.add(BatchNormalization())
+model.add(Dropout(0.3))
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -116,12 +118,11 @@ scores = model.evaluate(np.array(X_train2), np.array(y_train2))
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100)) #86.16% without batchnorm, 80 with
 
 scores_test = model.evaluate(np.array(X_test2), np.array(y_test2))
-print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #80.15% without batchnorm
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #80.15% with batchnorm
 
 print(scores_test[0])
 
 m2 = model.fit(np.array(X_train2), np.array(y_train2), batch_size= 100,epochs= 10,verbose=1,validation_data=(np.array(X_test2), np.array(y_test2)))
-
 
 m2.history
 
