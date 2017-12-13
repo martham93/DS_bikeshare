@@ -21,6 +21,12 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
+from keras.layers.normalization import BatchNormalization
+
+import numpy as np
+from keras.utils import to_categorical
+import matplotlib.pyplot as plt
+
 
 df = pd.read_csv('/Users/marthamorrissey/Desktop/DS_practice/df_elev_dist.csv')
 
@@ -91,12 +97,14 @@ X_train2, X_test2, y_train2, y_test2 = train_test_split(bcycle_model2, df['ot'],
 ######
 model = Sequential()
 model.add(Dense(16, input_dim=7, activation='relu')) #input dim X_trai shape[1]
+model.add(BatchNormalization())
 model.add(Dense(8, activation='relu'))
+model.add(BatchNormalization())
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=100)
+m = model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=100, verbose = 1)
 
 X_train2.shape
 y_train2.shape
@@ -105,10 +113,39 @@ y_train2.shape
 scores = model.evaluate(np.array(X_train2), np.array(y_train2))
 
 
-print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100)) #86.16%
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100)) #86.16% without batchnorm, 80 with
 
 scores_test = model.evaluate(np.array(X_test2), np.array(y_test2))
-print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #86.15%
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #80.15% without batchnorm
+
+print(scores_test[0])
+
+m2 = model.fit(np.array(X_train2), np.array(y_train2), batch_size= 100,epochs= 10,verbose=1,validation_data=(np.array(X_test2), np.array(y_test2)))
+
+
+m2.history
+
+accuracy = m2.history['acc']
+val_accuracy = m2.history['val_acc']
+loss = m2.history['loss']
+val_loss = m2.history['val_loss']
+epochs = range(len(accuracy))
+plt.plot(epochs, accuracy, 'bo', label='Training accuracy')
+plt.plot(epochs, val_accuracy, 'b', label='Validation accuracy')
+plt.title('Training and validation accuracy')
+plt.legend()
+plt.figure()
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
+plt.show()
+
+m.history
+
+
+
+
 
 import pydot_ng as pydot
 import graphviz
