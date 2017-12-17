@@ -67,8 +67,8 @@ df_upsampled.Overcharge.value_counts()
 # Convert more variables to numeric
 label_encoder = preprocessing.LabelEncoder()
 encoded_day = label_encoder.fit_transform(df_upsampled["Checkout Day of Week"])
-encoded_cstation = label_encoder.fit_transform(df_upsampled["Checkout Station"])
-encoded_rstation = label_encoder.fit_transform(df_upsampled["Return Station (Station Information)"])
+encoded_cstation = label_encoder.fit_transform(df_upsampled["NAME_x"]) #Checkout Station
+encoded_rstation = label_encoder.fit_transform(df_upsampled["NAME_y"]) #Return Station (Station Information)
 comhrs = df_upsampled['pm_commute_hrs']
 acomhrs = df_upsampled['am_commute_hrs']
 chour = df_upsampled['Checkout hour']
@@ -98,15 +98,15 @@ X_train2, X_test2, y_train2, y_test2 = train_test_split(bcycle_model2, df['ot'],
 model = Sequential()
 model.add(Dense(16, input_dim=7, activation='relu')) #input dim X_trai shape[1]
 model.add(BatchNormalization())
-model.add(Dropout(0.3))
+model.add(Dropout(0.2))
 model.add(Dense(8, activation='relu'))
 model.add(BatchNormalization())
-model.add(Dropout(0.3))
+model.add(Dropout(0.2))
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-m = model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=100, verbose = 1)
+m = model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=128, verbose = 1)
 
 X_train2.shape
 y_train2.shape
@@ -115,14 +115,15 @@ y_train2.shape
 scores = model.evaluate(np.array(X_train2), np.array(y_train2))
 
 
-print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100)) #86.16% without batchnorm, 80 with
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100)) #86.17% without batchnorm, 80 with
 
 scores_test = model.evaluate(np.array(X_test2), np.array(y_test2))
 print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #80.15% with batchnorm
+#86.16
 
 print(scores_test[0])
 
-m2 = model.fit(np.array(X_train2), np.array(y_train2), batch_size= 100,epochs= 10,verbose=1,validation_data=(np.array(X_test2), np.array(y_test2)))
+m2 = model.fit(np.array(X_train2), np.array(y_train2), batch_size= 128,epochs= 20,verbose=1,validation_data=(np.array(X_test2), np.array(y_test2)))
 
 m2.history
 

@@ -12,7 +12,9 @@ from sklearn.utils import resample
 %matplotlib inline
 os.chdir('/Users/danielfeeney/Documents/DataScience/Bicycle')
 #df = pd.read_csv('bcycle_modified_full.csv')
-df = pd.read_csv('df_elev_dist.csv')
+#df = pd.read_csv('df_elev_dist.csv')
+
+df= pd.read_csv('/Users/marthamorrissey/Desktop/DS_practice/df_elev_dist.csv')
 #Gridsearch, sklearn api xgboost, drop in gridsearch cv class sets the score by parameter.
 
 
@@ -50,8 +52,8 @@ df_upsampled.Overcharge.value_counts()
 # Convert more variables to numeric
 label_encoder = preprocessing.LabelEncoder()
 encoded_day = label_encoder.fit_transform(df_upsampled["Checkout Day of Week"])
-encoded_cstation = label_encoder.fit_transform(df_upsampled["Checkout Station"])
-encoded_rstation = label_encoder.fit_transform(df_upsampled["Return Station (Station Information)"])
+encoded_cstation = label_encoder.fit_transform(df_upsampled["NAME_x"]) #Checkout Station
+encoded_rstation = label_encoder.fit_transform(df_upsampled["NAME_y"]) #"Return Station (Station Information)"
 comhrs = df_upsampled['pm_commute_hrs']
 acomhrs = df_upsampled['am_commute_hrs']
 chour = df_upsampled['Checkout hour']
