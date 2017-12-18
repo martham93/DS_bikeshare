@@ -147,8 +147,6 @@ m.history
 
 
 
-
-
 import pydot_ng as pydot
 import graphviz
 from keras.utils import plot_model
