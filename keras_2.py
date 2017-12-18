@@ -194,19 +194,34 @@ X_train.shape
 model2 = Sequential()
 model2.add(Dense(16, input_dim=8, activation='relu')) #input dim X_trai shape[1]
 model2.add(BatchNormalization())
-model2.add(Dropout(0.2))
+model2.add(Dropout(0.5))
 model2.add(Dense(8, activation='relu'))
 model2.add(BatchNormalization())
-model2.add(Dropout(0.2))
+model2.add(Dropout(0.5))
 model2.add(Dense(1, activation='sigmoid'))
+
 
 model2.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-m2 = model2.fit(np.array(X_train), np.array(y_train), batch_size= 128,epochs= 20,verbose=1,validation_data=(np.array(X_test), np.array(y_test)))
+m2 = model2.fit(np.array(X_train), np.array(y_train), batch_size= 128,epochs= 15,verbose=1,validation_data=(np.array(X_test), np.array(y_test)))
 
+accuracy = m2.history['acc']
+val_accuracy = m2.history['val_acc']
+loss = m2.history['loss']
+val_loss = m2.history['val_loss']
+epochs = range(len(accuracy))
+plt.plot(epochs, accuracy, 'bo', label='Training accuracy')
+plt.plot(epochs, val_accuracy, 'b', label='Validation accuracy')
+plt.title('Training and validation accuracy')
+plt.legend()
+plt.figure()
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
+plt.show()
 
-
-
+plot_model(model2, to_file='/Users/marthamorrissey/Desktop/model3.png')
 
 
 #########################################################
@@ -220,10 +235,6 @@ train_features2 = pd.DataFrame([encoded_cstation,
 
 #Split
 X_train3, X_test3, y_train3, y_test3 = train_test_split(train_features2, ot, test_size=0.4, random_state=0)
-
-
-
-
 
 
 
