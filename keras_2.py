@@ -63,7 +63,13 @@ df_upsampled = pd.concat([df_majority, df_minority_upsampled])
 # Display new class counts
 df_upsampled.Overcharge.value_counts()
 
+df_upsampled.columns
 
+df_upsampled['net_gain'].unique()
+
+df_upsampled['o_d_dist'].unique()
+
+df_upsampled['Overcharge'].unique()
 # Convert more variables to numeric
 label_encoder = preprocessing.LabelEncoder()
 encoded_day = label_encoder.fit_transform(df_upsampled["Checkout Day of Week"])
@@ -73,8 +79,18 @@ comhrs = df_upsampled['pm_commute_hrs']
 acomhrs = df_upsampled['am_commute_hrs']
 chour = df_upsampled['Checkout hour']
 wknd = df_upsampled['weekend']
-gains = df['net_gain']
-dist = df['o_d_dist']
+gains = df_upsampled['net_gain']
+dist = df_upsampled['o_d_dist']
+ot = label_encoder.fit_transform(df_upsampled["Overcharge"])
+
+type(ot)
+ot
+
+
+gains.unique()
+
+
+dist.unique()
 
 train_features = pd.DataFrame([encoded_cstation,
                               encoded_rstation,
@@ -86,7 +102,9 @@ train_features = pd.DataFrame([encoded_cstation,
                               dist]).T
 
 
-#Do a train/test split, updated with upsampled data
+
+
+#Do a train/test split, updated with "raw"  (not upsampled data)
 
 bcycle_model2 = df[['encoded_cstation', 'encoded_rstation', 'am_commute_hrs', 'pm_commute_hrs', 'weekend', 'net_gain', 'o_d_dist']]
 bcycle_model2.columns
@@ -105,6 +123,9 @@ model.add(Dropout(0.2))
 model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+
+
 
 m = model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=128, verbose = 1)
 
@@ -162,11 +183,77 @@ y_pred = model.predict_proba(np.array(X_test2))
 roc_auc_score(np.array(y_test2), y_pred)
 #.67 RUC score
 
+#####################################
+#Modeling with Upsampled data
+
+X_train, X_test, y_train, y_test = train_test_split(train_features, df_upsampled['Overcharge'], test_size=0.4, random_state=0)
+
+X_train.shape
+
+
+model2 = Sequential()
+model2.add(Dense(16, input_dim=8, activation='relu')) #input dim X_trai shape[1]
+model2.add(BatchNormalization())
+model2.add(Dropout(0.2))
+model2.add(Dense(8, activation='relu'))
+model2.add(BatchNormalization())
+model2.add(Dropout(0.2))
+model2.add(Dense(1, activation='sigmoid'))
+
+model2.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+m2 = model2.fit(np.array(X_train), np.array(y_train), batch_size= 128,epochs= 20,verbose=1,validation_data=(np.array(X_test), np.array(y_test)))
+
+
+
+
+
+
+#########################################################
+train_features2 = pd.DataFrame([encoded_cstation,
+                              encoded_rstation,
+                              wknd,
+                              gains,
+                              dist]).T
+
+
+
+#Split
+X_train3, X_test3, y_train3, y_test3 = train_test_split(train_features2, ot, test_size=0.4, random_state=0)
+
+
+
+
+
+
+
+
+
+
+
+
+#model
 model = Sequential()
-model.add(Dense(16, input_dim=7, activation='relu')) #input dim X_trai shape[1]
+model.add(Dense(16, input_dim=5, activation='relu')) #input dim X_trai shape[1]
+model.add(BatchNormalization())
+model.add(Dropout(0.2))
 model.add(Dense(8, activation='relu'))
+model.add(BatchNormalization())
+model.add(Dropout(0.2))
 model.add(Dense(1, activation='sigmoid'))
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=[''])
+m3 = model.fit(np.array(X_train3), np.array(y_train3), batch_size= 64,epochs= 20,verbose=1,validation_data=(np.array(X_test3), np.array(y_test3)))
 
-model.fit(np.array(X_train2), np.array(y_train2), epochs=10, batch_size=100)
+X_train3.shape
+
+df_upsampled['Overcharge'].shape
+
+train_features2.shape
+
+
+X_train3
+
+X_train2
+
+train_features

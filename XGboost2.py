@@ -58,8 +58,8 @@ comhrs = df_upsampled['pm_commute_hrs']
 acomhrs = df_upsampled['am_commute_hrs']
 chour = df_upsampled['Checkout hour']
 wknd = df_upsampled['weekend']
-gains = df['net_gain']
-dist = df['o_d_dist']
+gains = df_upsampled['net_gain']
+dist = df_upsampled['o_d_dist']
 
 train_features = pd.DataFrame([encoded_cstation,
                               encoded_rstation,
@@ -69,6 +69,8 @@ train_features = pd.DataFrame([encoded_cstation,
                               wknd,
                               gains,
                               dist]).T
+
+train_features
 #Do a train/test split
 X_train, X_test, y_train, y_test = train_test_split(train_features, df_upsampled['Overcharge'], test_size=0.4, random_state=0)
 
