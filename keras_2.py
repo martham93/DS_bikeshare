@@ -164,7 +164,10 @@ plt.title('Training and validation loss')
 plt.legend()
 plt.show()
 
-m.history
+#AUC
+ y_pred = model.predict_proba(np.array(X_test2))
+
+ roc_auc_score(y_test2, y_pred)
 
 
 
@@ -205,6 +208,13 @@ model2.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'
 
 m2 = model2.fit(np.array(X_train), np.array(y_train), batch_size= 128,epochs= 15,verbose=1,validation_data=(np.array(X_test), np.array(y_test)))
 
+#AUC
+from sklearn.metrics import roc_auc_score
+
+ y_pred = model2.predict_proba(np.array(X_test))
+
+ roc_auc_score(y_test, y_pred)
+
 accuracy = m2.history['acc']
 val_accuracy = m2.history['val_acc']
 loss = m2.history['loss']
@@ -224,6 +234,25 @@ plt.show()
 plot_model(model2, to_file='/Users/marthamorrissey/Desktop/model3.png')
 
 
+
+scores2 = model2.evaluate(np.array(X_train), np.array(y_train))
+
+
+print("\n%s: %.2f%%" % (model2.metrics_names[1], scores2[1]*100)) #68.45%
+
+scores_test = model2.evaluate(np.array(X_test), np.array(y_test))
+print("\n%s: %.2f%%" % (model2.metrics_names[1], scores_test[1]*100)) #68.57
+
+
+print(scores_test[0]) #.57
+
+predcs = m2.predict(X_test)
+pd.crosstab(predcs,y_test)
+
+
+confusion_matrix(y_test, y_pred)
+
+
 #########################################################
 train_features2 = pd.DataFrame([encoded_cstation,
                               encoded_rstation,
@@ -234,16 +263,10 @@ train_features2 = pd.DataFrame([encoded_cstation,
 
 
 #Split
-X_train3, X_test3, y_train3, y_test3 = train_test_split(train_features2, ot, test_size=0.4, random_state=0)
+X_train3, X_test3, y_train3, y_test3 = train_test_split(train_features2, df_upsampled['Overcharge'], test_size=0.4, random_state=0)
 
 
-
-
-
-
-
-
-#model
+#model- removing variables with low F score from XGBoost model
 model = Sequential()
 model.add(Dense(16, input_dim=5, activation='relu')) #input dim X_trai shape[1]
 model.add(BatchNormalization())
@@ -254,7 +277,7 @@ model.add(Dropout(0.2))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
-m3 = model.fit(np.array(X_train3), np.array(y_train3), batch_size= 64,epochs= 20,verbose=1,validation_data=(np.array(X_test3), np.array(y_test3)))
+m3 = model.fit(np.array(X_train3), np.array(y_train3), batch_size= 128,epochs= 10,verbose=1,validation_data=(np.array(X_test3), np.array(y_test3)))
 
 X_train3.shape
 
@@ -262,9 +285,22 @@ df_upsampled['Overcharge'].shape
 
 train_features2.shape
 
+accuracy = m3.history['acc']
+val_accuracy = m3.history['val_acc']
+loss = m3.history['loss']
+val_loss = m3.history['val_loss']
+epochs = range(len(accuracy))
+plt.plot(epochs, accuracy, 'bo', label='Training accuracy')
+plt.plot(epochs, val_accuracy, 'b', label='Validation accuracy')
+plt.title('Training and validation accuracy')
+plt.legend()
+plt.figure()
+plt.plot(epochs, loss, 'bo', label='Training loss')
+plt.plot(epochs, val_loss, 'b', label='Validation loss')
+plt.title('Training and validation loss')
+plt.legend()
+plt.show()
 
-X_train3
-
-X_train2
-
-train_features
+#AUC
+ y_pred = model.predict_proba(np.array(X_test3))
+ roc_auc_score(y_test3, y_pred)
