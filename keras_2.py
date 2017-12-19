@@ -3,23 +3,16 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 import pandas as pd
 from sklearn import utils
-from sklearn import linear_model
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
-from scipy.stats.stats import pearsonr
-import itertools
-import logging
 
 from keras.optimizers import SGD
 
 
 from keras.wrappers.scikit_learn import KerasClassifier
-from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import StratifiedKFold
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
+
 
 from keras.layers.normalization import BatchNormalization
 
@@ -257,7 +250,7 @@ confusion_matrix(y_test, y_pred)
 train_features2 = pd.DataFrame([encoded_cstation,
                               encoded_rstation,
                               wknd,
-                              gains,
+                              comhrs,
                               dist]).T
 
 
@@ -270,10 +263,10 @@ X_train3, X_test3, y_train3, y_test3 = train_test_split(train_features2, df_upsa
 model = Sequential()
 model.add(Dense(16, input_dim=5, activation='relu')) #input dim X_trai shape[1]
 model.add(BatchNormalization())
-model.add(Dropout(0.2))
+model.add(Dropout(0.4))
 model.add(Dense(8, activation='relu'))
 model.add(BatchNormalization())
-model.add(Dropout(0.2))
+model.add(Dropout(0.4))
 model.add(Dense(1, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
@@ -300,6 +293,19 @@ plt.plot(epochs, val_loss, 'b', label='Validation loss')
 plt.title('Training and validation loss')
 plt.legend()
 plt.show()
+
+model.summary()
+
+scores = model.evaluate(np.array(X_train3), np.array(y_train3))
+
+
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores2[1]*100)) #68.45%
+
+scores_test = model.evaluate(np.array(X_test3), np.array(y_test3))
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores_test[1]*100)) #68.57
+
+
+print(scores_test[0])
 
 #AUC
  y_pred = model.predict_proba(np.array(X_test3))

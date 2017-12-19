@@ -19,6 +19,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
+
 from sklearn.pipeline import Pipeline
 
 
@@ -74,49 +75,7 @@ X_test.shape
 
 y_train.shape
 y_test.shape
-model = Sequential()
 
-bcycle = pd.read_csv('/Users/marthamorrissey/Desktop/DS_practice/bcycle_modified_full.csv')
-#contains feature engineered data
-
-bcycle_model = bcycle[['encoded_cstation', 'encoded_rstation', 'am_commute_hrs', 'pm_commute_hrs', 'weekend']]
-
-
-
-
-
-
-#Do a train/test split
-X_train2, X_test2, y_train2, y_test2 = train_test_split(bcycle_model, bcycle['ot'], test_size=0.4, random_state=0)
-
-X_train2.shape
-X_test2.shape
-y_train2.shape
-y_test2.shape
-
-
-
-
-score = model.evaluate(x_test, y_test, batch_size = 32)
-
-
-########
-seed = 7
-np.random.seed(seed)
-
-def create_baseline():
-	# create model
-	model = Sequential()
-	model.add(Dense(6, input_dim=6, kernel_initializer='normal', activation='relu'))
-	model.add(Dense(1, kernel_initializer='normal', activation='sigmoid'))
-	# Compile model
-	model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-	return model
-
-
-model.fit(np.array(X_train), np.array(y_train))
-score = model.evaluate(np.array(X_test), np.array(y_test), batch_size = 32)
-score
 
 
 
@@ -151,5 +110,5 @@ model.summary()
 
 from sklearn.metrics import roc_auc_score
 
- y_pred = model.predict_proba(np.array(X_test))
+y_pred = model.predict_proba(np.array(X_test))
 roc_auc_score(np.array(y_test), y_pred)
